@@ -1,8 +1,11 @@
 package br.ufsc.ine.sparkjava;
 
-import static spark.Spark.*;
-
-import java.util.Optional;
+import static spark.Spark.after;
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.put;
 
 import com.google.gson.Gson;
 
@@ -15,20 +18,14 @@ public class App {
 	
     public static void main( String[] args ){
     	
-    	port(8082);
+    	port(8084);
     	
     	get("/person", (request, response) -> {
     	    return personController.getAll();
     	}, gson::toJson);
     	
     	get("/person/:uuid", (request, response) -> {
-    		String uuid = request.params(":uuid");
-    		Optional<Person> optional = personController.getByUuid(uuid);
-    		if(optional.isPresent()){
-    			return optional.get();
-    		}
-    		response.status(400);
-    		return null;
+    		return personController.getByUuid(request, response);
     	}, gson::toJson);
 
     	post("/person", (request, response) -> {
@@ -39,9 +36,9 @@ public class App {
     		return personController.updatePerson(request);
     	}, gson::toJson);
 
-    	delete("/person", (request, response) -> {
-    		return null;
-    	});
+    	delete("/person/:uuid", (request, response) -> {
+    		return personController.deletePerson(request, response);
+    	}, gson::toJson);
     	
     	after((req, res) -> {
     		  res.type("application/json");
