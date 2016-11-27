@@ -1,13 +1,9 @@
 package br.ufsc.ine.sparkjava;
 
-import static spark.Spark.after;
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.port;
-import static spark.Spark.post;
-import static spark.Spark.put;
-
 import com.google.gson.Gson;
+import spark.Redirect;
+
+import static spark.Spark.*;
 
 
 public class App {
@@ -19,6 +15,8 @@ public class App {
     public static void main( String[] args ){
     	
     	port(8084);
+
+		redirect.get("/old-person-resource", "/person", Redirect.Status.MOVED_PERMANENTLY);
     	
     	get("/person", (request, response) -> {
     	    return personController.getAll();
@@ -42,6 +40,7 @@ public class App {
     	
     	after((req, res) -> {
     		  res.type("application/json");
+		        res.header("Content-Encoding", "gzip");
     	});
     	
     }
